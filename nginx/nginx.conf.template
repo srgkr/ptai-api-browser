@@ -50,14 +50,14 @@ http {
     }
 
     # раздача больших файлов из общего каталога, путь /app/tmp_data/ поменять при необходимости
-    location /downloads/ {
-            alias /app/tmp_data/;
-            autoindex off;
-            proxy_buffering off;
-            add_header Content-Disposition 'attachment';
-            proxy_read_timeout 3600s;
-            proxy_send_timeout 3600s;
-    }
+#    location /downloads/ {
+#            alias /app/tmp_data/;
+#            autoindex off;
+#            proxy_buffering off;
+#            add_header Content-Disposition 'attachment';
+#            proxy_read_timeout 3600s;
+#            proxy_send_timeout 3600s;
+#    }
 
     # проксирование больших файлов через сам nginx чтобы не скачивать внутрь контейнера или в память
     location /proxy-download/ {
