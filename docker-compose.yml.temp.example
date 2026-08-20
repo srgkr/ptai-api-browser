@@ -13,7 +13,7 @@ services:
       - .env
     cpus: 2.0
     mem_limit: 1G
-    memory-swap: 1G
+#    memory-swap: 1G
     volumes:
       - ./tmp_data:/app/tmp_data:z
 
@@ -25,7 +25,7 @@ services:
       - "2443:443"
     cpus: 0.5
     mem_limit: 0.3gb
-    memory-swap: 0.5gb
+#    memory-swap: 0.5gb
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
