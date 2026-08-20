@@ -1,0 +1,23 @@
+# Python
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Git
+.git/
+.gitignore
+.env
+
+# Docker
+Dockerfile
+docker-compose*.yml
+*.log
+.DS_Store
+
+todo.txt
+tmp_data/
+oom

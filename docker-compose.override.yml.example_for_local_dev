@@ -1,0 +1,8 @@
+# для разработки (streamlit rerun)
+version: '3.8'
+
+services:
+  app:
+    volumes:
+      - .:/app
+

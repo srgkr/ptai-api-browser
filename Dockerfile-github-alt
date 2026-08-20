@@ -1,0 +1,18 @@
+FROM alpine/git AS downloader
+WORKDIR /app
+RUN git clone https://github.com/streamlit/streamlit-example.git .
+
+FROM python:3.11-slim
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=downloader /app/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY --from=downloader /app .
+
+CMD ["streamlit", "run", "ptai-api-browser.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
