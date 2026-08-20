@@ -1252,6 +1252,8 @@ if not st.session_state.access_token:
 
 with st.sidebar:
     st.write(f"PTAI API Browser v{__version__}")
+    st.link_button("Открыть на GitHub", "https://github.com/srgkr/ptai-api-browser")
+
     st.caption("Текущий сервер:")
     st.write(API_URL)
 
