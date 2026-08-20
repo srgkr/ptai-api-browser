@@ -1218,7 +1218,7 @@ if not st.session_state.access_token:
     with st.form("login_form"):
 
         with st.container(border=True):
-            selected_url_option = st.selectbox("Выберите или укажите API URL сервера", options=config.DEFAULT_API_URLS)
+            selected_url_option = st.selectbox("Выберите или укажите API URL сервера", options=ext_config.DEFAULT_API_URLS)
 
         target_api_url = selected_url_option
 
