@@ -51,14 +51,6 @@ cookie=False
 
 
 # группа функций для работы с localstorage
-def clear_token_from_localstorage0(key_name: str = "ptai_master_token"):
-   js_code = f"""
-   <script>
-     localStorage.removeItem('{key_name}');
-   </script>
-   """
-   st.html(js_code, unsafe_allow_javascript=True)
-
 def clear_auth_from_localstorage():
     js_code = """
     <script>
@@ -68,14 +60,6 @@ def clear_auth_from_localstorage():
     """
     st.html(js_code, unsafe_allow_javascript=True)
 
-def save_token_to_localstorage0(token, key_name: str = "ptai_master_token"):
- js_code = f"""
- <script>
-     localStorage.setItem('{key_name}', '{token}');
- </script>
- """
- st.html(js_code, unsafe_allow_javascript=True)
-
 def save_config_to_localstorage(token: str, api_url: str):
     js_code = f"""
     <script>
@@ -84,40 +68,6 @@ def save_config_to_localstorage(token: str, api_url: str):
     </script>
     """
     st.html(js_code, unsafe_allow_javascript=True)
-
-def load_token_from_localstorage0(key_name: str = "ptai_master_token"):
-    """
-    Загрузка токена из localStorage через URL.
-    """
-    # Проверяем токен в URL
-    token_in_url = st.query_params.get("token")
-
-    if token_in_url:
-        st.session_state.master_token = token_in_url
-        del st.query_params["token"]
-        return token_in_url
-
-    # если access token нет в URL и нет в сессии, считываем initial token из localStorage
-    if not st.session_state.get("access_token"):
-        js_code = f"""
-        <script>
-            const token = localStorage.getItem('{key_name}');
-            if (token) {{
-                const url = new URL(window.parent.location.href);
-                url.searchParams.set('token', token);
-                window.parent.location.href = url.href;
-            }}
-        </script>
-        """
-        st.html(js_code, unsafe_allow_javascript=True)
-        token_in_url = st.query_params.get("token")
-
-        if token_in_url:
-          st.session_state.master_token = token_in_url
-          del st.query_params["token"]
-          return token_in_url
-
-    return None
 
 def load_config_from_localstorage():
     """
@@ -198,6 +148,7 @@ def clear_all_caches_and_session():
     """Полная очистка кэшей Streamlit и текущего состояния авторизации"""
     st.cache_data.clear()
     st.cache_resource.clear()
+    st.session_state.clear()
     st.session_state.access_token = None
     st.session_state.master_token = None
     st.session_state.expiredAt = None
@@ -205,7 +156,7 @@ def clear_all_caches_and_session():
     if 'selected_scan' in st.session_state:
         del st.session_state.selected_scan
     #todo: добавить очистку TMP
-    add_debug_log(f"Полная очистка кэшей Streamlit и текущего состояния авторизации")
+    #add_debug_log(f"Полная очистка кэшей Streamlit и текущего состояния авторизации")
 
 
 def render_scan_metrics(stats, deltas):
@@ -1238,6 +1189,7 @@ if not st.session_state.access_token:
                         cookie_manager.set(cookie="ptai_master_token", val=master_tkn, max_age = 60*60*24*3)
                     else:
                         save_config_to_localstorage(master_tkn, target_api_url)
+                        time.sleep(1)
 
                     st.success("Авторизация успешна! Загрузка...")
                     if cookie:
@@ -1259,7 +1211,6 @@ with st.sidebar:
 
     #if st.sidebar.button("Выйти"):
     if st.button("Выйти из аккаунта", use_container_width=True):
-        clear_all_caches_and_session()
         if cookie:
           try:
             cookie_manager.delete("ptai_master_token")
@@ -1268,6 +1219,8 @@ with st.sidebar:
             st.write(f"cookie: Unable to delete {e}")
         else:
             clear_auth_from_localstorage()
+            time.sleep(1)
+        clear_all_caches_and_session()
         st.rerun()
 
     st.divider()
