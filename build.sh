@@ -71,7 +71,7 @@ else
     echo "Для принудительного обновления requirements.txt запустить: ./build.sh --requirements)"
 fi
 
-mkdir ./tmp_data
+mkdir -p ./tmp_data
 
 echo "Генерируем образ"
 $CONTAINER_BUILD \
