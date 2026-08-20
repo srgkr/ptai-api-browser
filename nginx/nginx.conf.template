@@ -61,6 +61,15 @@ http {
 
     # проксирование больших файлов через сам nginx чтобы не скачивать внутрь контейнера или в память
     location /proxy-download/ {
+        # Проверка секретного ключа
+        if ($arg_secret != "__PROXY_SECRET__") {
+        return 403 "Access Denied: Invalid or missing PROXY_SECRET";
+        }
+
+        # Проверка белого списка хостов
+        if ($arg_target !~* "^https?://(__ALLOWED_HOSTS__)(:[0-9]+)?/") {
+        return 403 "Access Denied: Host is not in ALLOWED_HOSTS";
+        }
         # параметры из URL
         set $target_url $arg_target;
         set $auth_token $arg_token;

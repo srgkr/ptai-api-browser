@@ -8,6 +8,7 @@ import urllib.parse
 import time
 import ext_config
 from ext_stream_functions_lib import add_debug_log, refresh_access_token, api_request
+from ext_helper_functions_lib import safe_str
 
 # Вспомогательная функция для парсинга и отображения содержимого ячейки от типа
 def render_cell_content(val):
@@ -228,15 +229,19 @@ def render_download_action_from_session_state(col, action_id, button_label, file
 def get_proxy_download_url(api_endpoint, project_id, branch_id=None, file_name="Source.zip"):
     current_token = st.session_state.get("access_token", "")
     endpoint = api_endpoint.format(project_id=project_id, branch_id=branch_id if branch_id else '')
+
     API_URL = st.session_state.api_url
     target_url = f"{API_URL}/{endpoint.lstrip('/')}"
-    #todo: безопасность проксирования - target_url
-    # Кодируем переменные для передачи в параметрах, url не изменяем
+
+    proxy_secret = getattr(ext_config, "PROXY_SECRET_KEY", os.getenv("PROXY_SECRET_KEY", ""))
+
+    # Кодируем переменные для передачи в параметрах
     encoded_token = urllib.parse.quote(current_token, safe="")
     encoded_filename = urllib.parse.quote(file_name, safe="")
+    #encoded_target = urllib.parse.quote(target_url, safe="")
     timestamp = int(time.time())
     # Формируем URL для Nginx-прокси
-    return f"/proxy-download/?target={target_url}&token={encoded_token}&filename={encoded_filename}&_t={timestamp}"
+    return f"/proxy-download/?target={target_url}&secret={proxy_secret}&token={encoded_token}&filename={encoded_filename}&_t={timestamp}"
 
 def source_download_action_proxy(col, action_id, button_label, file_prefix, api_endpoint,
                           project_id, scan_id=None, settings_id=None, branch_id=None,

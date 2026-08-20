@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+if [ ! -f ".env" ]; then
+    echo " ОШИБКА: Файл .env не найден!"
+    exit 1
+fi
+
 GENERATE_REQ=false
 DOCKERFILE_NAME="Dockerfile"
 
@@ -72,6 +77,29 @@ else
 fi
 
 mkdir -p ./tmp_data
+
+# Генерация PROXY_SECRET_KEY
+if ! grep -q "^PROXY_SECRET_KEY=" .env 2>/dev/null; then
+    NEW_SECRET=$(openssl rand -hex 32)
+    echo "PROXY_SECRET_KEY=$NEW_SECRET" >> .env
+    echo "Сгенерирован новый PROXY_SECRET_KEY в .env"
+fi
+
+if [ ! -f "./nginx/nginx.conf" ]; then
+    cp ./nginx/nginx.conf.template ./nginx/nginx.conf
+    echo "Создан nginx.conf из шаблона."
+fi
+
+PROXY_SECRET=$(grep "^PROXY_SECRET_KEY=" .env | cut -d '=' -f2)
+RAW_URLS=$(grep "^DEFAULT_API_URLS=" .env | cut -d '=' -f2)
+
+HOSTS_PATTERN=$(echo "$RAW_URLS" | tr ',' '\n' | sed -e 's~^https\?://~~' -e 's~/.*~~' -e 's~:.*~~' | tr '\n' '|' | sed 's/|$//' | sed 's/\./\\./g')
+
+echo "Разрешенные хосты для прокси: $HOSTS_PATTERN"
+
+# Подставляем сгенерированный секрет и хосты в nginx.conf
+sed -i "s/__PROXY_SECRET__/$PROXY_SECRET/g" ./nginx/nginx.conf
+sed -i "s/__ALLOWED_HOSTS__/$HOSTS_PATTERN/g" ./nginx/nginx.conf
 
 echo "Генерируем образ"
 $CONTAINER_BUILD \

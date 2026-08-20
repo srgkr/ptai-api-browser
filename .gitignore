@@ -18,3 +18,4 @@ docker-compose.override.yml
 tmp_data/
 oom
 nginx/certs/
+nginx/nginx.conf
