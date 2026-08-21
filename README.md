@@ -1,6 +1,6 @@
 # PTAI API Browser
 
-Просмотр и управление [Positive Technologies Application Inspector (PTAI)](https://ptsecurity.com/ru-ru/products/ai/) (Анализатор исходного кода приложений) через API.
+Просмотр и управление [Positive Technologies Application Inspector (PTAI)](https://ptsecurity.com/ru-ru/products/ai/) (Анализатор исходного кода приложений) через API v16.
 
 сделан на основе [Streamlit](https://streamlit.io/), проксирование через Nginx.
 
