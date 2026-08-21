@@ -259,21 +259,26 @@ def source_download_action_proxy(col, action_id, button_label, file_prefix, api_
 
         # скачивание через проксирование
         if st.button(f"Запрос скачивания через прокси:\n\r {button_label}", icon=":material/search:", key=f"btn_dl_{action_id}_{scan_id or settings_id or project_id}_proxy", help=endpoint):
-                        proxy_url = get_proxy_download_url(
-                            api_endpoint=endpoint,
-                            project_id=project_id,
-                            branch_id=branch_id,
-                            file_name=safe_file_name
-                        )
-                        download_label=f"📥 Скачать:\n\r {button_label}"
-                        st.markdown(
-                            f'''
-                            <a href="{proxy_url}" download="{safe_file_name}" target="_blank">
-                                <button style="width: 100%; padding: 0.5rem; background: #4CAF50; color: white; border: none; border-radius: 4px;">{download_label}</button>
-                            </a>
-                            ''',
-                            unsafe_allow_html=True
-                        )
+            # визуальная задержка для показа информации ожидания окна загрузки
+            with st.spinner("Пожалуйста, нажмите кнопку 📥 Скачать: и дождитесь окна загрузки..."):
+                proxy_url = get_proxy_download_url(
+                    api_endpoint=endpoint,
+                    project_id=project_id,
+                    branch_id=branch_id,
+                    file_name=safe_file_name
+                )
+                time.sleep(1.2)
+            download_label=f"📥 Скачать\n\r {button_label}"
+            st.markdown(f'''<a href="{proxy_url}" download="{safe_file_name}" target="_blank" style="text-decoration: none;">
+                        <button style="width: 100%;
+                            padding: 0.5rem;
+                            background: #4CAF50;
+                            color: white;
+                            border: none;
+                            border-radius: 6px;
+                            font-weight: 500;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);">{download_label}</button></a>''',unsafe_allow_html=True
+            )
 
 # скачивает сам streamlit в tmp и раздает nginx из общего tmp - обязательно каталог tmp должен быть подмонтирован и в nginx
 def source_download_action_tmp(col, action_id, button_label, file_prefix, api_endpoint,
